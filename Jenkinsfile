@@ -5,15 +5,20 @@ pipeline {
 
         stage('Check Python') {
             steps {
-                sh 'which python || true'
-                sh 'which python3 || true'
+                sh 'python3 --version'
+                sh 'pip3 --version'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip3 install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'python -m pytest || true'
-                sh 'python3 -m pytest || true'
+                sh 'pytest'
             }
         }
     }
