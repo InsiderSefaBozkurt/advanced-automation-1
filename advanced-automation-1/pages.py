@@ -94,9 +94,17 @@ class InsiderPages:
         print("[INFO] Lever 'Location' kutusuna tıklandı.")
 
         time.sleep(1)
-        istanbul_option = self.wait.until(EC.element_to_be_clickable(
-            (By.XPATH, "//a[contains(text(), 'Istanbul')] | //div[contains(text(), 'Istanbul')]")))
-        istanbul_option.click()
+wait = WebDriverWait(self.driver, 20)
+
+istanbul_option = wait.until(
+    EC.element_to_be_clickable((By.XPATH, "//a[contains(text(),'Istanbul')]"))
+)
+
+self.driver.execute_script("arguments[0].scrollIntoView(true);", istanbul_option)
+
+wait.until(EC.element_to_be_clickable((By.XPATH, "//a[contains(text(),'Istanbul')]")))
+
+istanbul_option.click()
 
         print("[INFO] Lever üzerinde Istanbul filtresi uygulandı.")
         time.sleep(5)
