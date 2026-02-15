@@ -104,10 +104,11 @@ wait.until(EC.element_to_be_clickable((By.XPATH, "//a[contains(text(),'Istanbul'
 
 try:
     istanbul_option.click()
-except:
+except Exception:
     self.driver.execute_script("arguments[0].click();", istanbul_option)
 
-        print("[INFO] Lever üzerinde Istanbul filtresi uygulandı.")
+print("[INFO] Lever üzerinde Istanbul filtresi uygulandı.")
+
         time.sleep(5)
 
     def verify_job_list(self):
