@@ -16,7 +16,7 @@ class InsiderPages:
 
     SEE_ALL_TEAMS_BTN = (By.XPATH, "//a[contains(text(), 'See all teams')]")
 
-    # --- METHODS ---
+    # --- METHODS --- (after)
 
     def open_home(self):
         self.driver.get("https://useinsider.com/")
