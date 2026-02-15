@@ -22,6 +22,8 @@ pipeline {
             // Ekran görüntülerini (fail durumunda) build sayfasında saklar
             // screenshots klasörün varsa orayı hedefler
             archiveArtifacts artifacts: '**/screenshots/*.png, report.xml', allowEmptyArchive: true
+
+            print "Screenshots and reports archived successfully!"
         }
     }
 }
