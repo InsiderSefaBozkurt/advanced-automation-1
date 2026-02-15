@@ -9,12 +9,14 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def driver():
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+    options = Options()
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--ignore-certificate-errors")
+    options.add_argument("--allow-insecure-localhost")
 
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(options=options)
     yield driver
     driver.quit()
 
