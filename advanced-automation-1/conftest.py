@@ -1,6 +1,8 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import os
+from datetime import datetime
 
 
 def pytest_addoption(parser):
@@ -25,6 +27,19 @@ def driver():
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
+    # Test sonucunu yakalar
     outcome = yield
     rep = outcome.get_result()
-    setattr(item, "rep_" + rep.when, rep)
+    
+    # Sadece test "failed" (kaldı) olduğunda SS almak için (Ödev gereği her zaman da alabilirsin)
+    if rep.when == "call" and rep.failed:
+        driver = item.funcargs.get('driver')
+        if driver:
+            # Screenshots klasörü yoksa oluşturur
+            if not os.path.exists("screenshots"):
+                os.makedirs("screenshots")
+            
+            # Dosya ismine tarih ve test adını ekler
+            file_name = f"screenshots/{item.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+            driver.save_screenshot(file_name)
+            print(f"\n[INFO] Screenshot saved: {file_name}")
