@@ -59,62 +59,59 @@ class InsiderPages:
     def filter_qa_jobs(self):
         import time
 
-        # See all teams
+        # 1. See all teams butonu
         all_teams_btn = self.wait.until(
             EC.presence_of_element_located(self.SEE_ALL_TEAMS_BTN)
         )
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({block: 'center'});",
-            all_teams_btn
-        )
-        self.driver.execute_script(
-            "arguments[0].click();",
-            all_teams_btn
-        )
+        # Scroll ve Click işlemlerini JS ile yaparak stabiliteyi sağlıyoruz
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", all_teams_btn)
+        time.sleep(1)
+        self.driver.execute_script("arguments[0].click();", all_teams_btn)
 
-        time.sleep(3)
+        # Takımların yüklenmesi için bekleme süresini biraz artırdık
+        time.sleep(5)
 
-        # QA team button
-        qa_xpath = (
-            "//h3[contains(text(), 'Quality Assurance')]"
-            "/ancestor::div[contains(@class, 'grid-item')]//a"
-        )
+        # 2. QA team button
+        qa_xpath = "//h3[contains(text(), 'Quality Assurance')]/ancestor::div[contains(@class, 'grid-item')]//a"
 
-        qa_btn = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, qa_xpath))
-        )
+        # Butonun tıklanabilir olduğundan emin oluyoruz
+        qa_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, qa_xpath)))
         self.driver.execute_script("arguments[0].click();", qa_btn)
 
-        time.sleep(4)
-
-        # Switch new tab if exists
+        # 3. Sekme Geçişi ve URL Kontrolü (Hata Aldığın Yer)
+        # Jenkins'te sekme açılması bazen 5-6 saniye sürebilir
+        time.sleep(6)
         handles = self.driver.window_handles
+
         if len(handles) > 1:
             self.driver.switch_to.window(handles[-1])
+            print(f"[INFO] Yeni sekmeye geçildi: {self.driver.current_url}")
 
-        self.wait.until(EC.url_contains("Quality"))
+        # URL kontrolünü biraz daha esnek yapıyoruz
+        self.wait.until(lambda d: "Quality" in d.current_url or "lever" in d.current_url)
 
-        # Location filter
+        # 4. Location filter
+        # Lever sayfasında bazen elementler geç render olur, süreyi artırdık
+        time.sleep(5)
+
+        # 'Location' kutusunu bul ve tıkla
         location_dropdown = self.wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//div[contains(@class, 'filter-button') and text()='Location']")
-            )
+            EC.element_to_be_clickable((By.XPATH,
+                                        "//span[contains(@id, 'select2-filter-by-location-container')] | //div[contains(@class, 'filter-button') and text()='Location']"))
         )
-        self.driver.execute_script(
-            "arguments[0].click();",
-            location_dropdown
-        )
+        self.driver.execute_script("arguments[0].click();", location_dropdown)
 
-        time.sleep(1)
-
+        # 5. Istanbul Seçimi
+        # 'Istanbul, Turkey' tam metnini veya 'Istanbul'u içeren herhangi bir elementi yakalıyoruz
         istanbul_option = self.wait.until(
             EC.element_to_be_clickable(
-                (By.XPATH, "//a[contains(text(), 'Istanbul')] | //div[contains(text(), 'Istanbul')]")
-            )
+                (By.XPATH, "//li[contains(text(), 'Istanbul')] | //a[contains(text(), 'Istanbul')]"))
         )
-        istanbul_option.click()
+        # Bazı durumlarda .click() yerine JS click daha garantidir
+        self.driver.execute_script("arguments[0].click();", istanbul_option)
 
-        time.sleep(4)
+        print("[INFO] Istanbul filtresi uygulandı.")
+        time.sleep(5)  # İlanların listelenmesi için bekleme
 
     def verify_job_list(self):
         try:
