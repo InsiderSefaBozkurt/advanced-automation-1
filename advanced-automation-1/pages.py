@@ -85,7 +85,7 @@ class InsiderPages:
         )
         self.driver.execute_script("arguments[0].click();", qa_btn)
 
-        time.sleep(10)
+        time.sleep(30)
 
         # Switch new tab if exists
         handles = self.driver.window_handles
